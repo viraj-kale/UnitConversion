@@ -1,4 +1,5 @@
-﻿using UnitConversion.Tests.Converters;
+﻿using UnitConversion.Converters;
+using UnitConversion.Exceptions;
 
 namespace UnitConversion.Tests.Converters;
 
@@ -62,9 +63,9 @@ public class LengthConverterTests
         // Arrange
         var converter = new LengthConverter();
         // Act & Assert
-        Assert.Throws<InvalidOperationException>(() =>
+        Assert.Throws<InvalidUnitException>(() =>
             converter.Convert(1, "invalid", "meters"));
-        Assert.Throws<InvalidOperationException>(() =>
+        Assert.Throws<InvalidUnitException>(() =>
             converter.Convert(1, "meters", "invalid"));
     }
 }

@@ -1,4 +1,9 @@
-﻿public class TemperatureConverter : IUnitConverter
+﻿using UnitConversion.Constants;
+using UnitConversion.Exceptions;
+
+namespace UnitConversion.Converters;
+
+public class TemperatureConverter : IUnitConverter
 {
     private static readonly HashSet<string> ValidUnits =
         new(StringComparer.OrdinalIgnoreCase)
@@ -22,17 +27,33 @@
         string toUnit)
     {
         if (!IsValidUnit(fromUnit))
-            throw new InvalidOperationException($"Invalid source unit '{fromUnit}'.");
+        {
+            throw new InvalidUnitException(
+                fromUnit,
+                Category,
+                GetDocumentedUnits(),
+                "fromUnit");
+        }
 
         if (!IsValidUnit(toUnit))
-            throw new InvalidOperationException($"Invalid target unit '{toUnit}'.");
+        {
+            throw new InvalidUnitException(
+                toUnit,
+                Category,
+                GetDocumentedUnits(),
+                "toUnit");
+        }
 
         double celsius = fromUnit.ToLower() switch
         {
             "celsius" => value,
             "fahrenheit" => (value - 32) * 5 / 9,
             "kelvin" => value - 273.15,
-            _ => throw new InvalidOperationException($"Invalid source unit '{fromUnit}'.")
+            _ => throw new InvalidUnitException(
+                fromUnit,
+                Category,
+                GetDocumentedUnits(),
+                "fromUnit")
         };
 
         return toUnit.ToLower() switch
@@ -40,7 +61,18 @@
             "celsius" => celsius,
             "fahrenheit" => (celsius * 9 / 5) + 32,
             "kelvin" => celsius + 273.15,
-            _ => throw new InvalidOperationException($"Invalid target unit '{toUnit}'.")
+            _ => throw new InvalidUnitException(
+                toUnit,
+                Category,
+                GetDocumentedUnits(),
+                "toUnit")
         };
+    }
+
+    private static IEnumerable<string> GetDocumentedUnits()
+    {
+        return UnitConversion.Constants.SupportedUnits.Categories.TryGetValue("temperature", out var units)
+            ? units
+            : [];
     }
 }

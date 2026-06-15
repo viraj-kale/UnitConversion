@@ -1,3 +1,6 @@
+using UnitConversion.Converters;
+using UnitConversion.Exceptions;
+
 namespace UnitConversion.Tests.Converters;
 
 public class SpeedConverterTests
@@ -46,9 +49,9 @@ public class SpeedConverterTests
     {
         var converter = new SpeedConverter();
 
-        Assert.Throws<InvalidOperationException>(() =>
+        Assert.Throws<InvalidUnitException>(() =>
             converter.Convert(1, "invalid", "milesperhour"));
-        Assert.Throws<InvalidOperationException>(() =>
+        Assert.Throws<InvalidUnitException>(() =>
             converter.Convert(1, "milesperhour", "invalid"));
     }
 }

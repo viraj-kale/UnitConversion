@@ -1,3 +1,5 @@
+namespace UnitConversion.Converters;
+
 public class SpeedConverter : FactorUnitConverter
 {
     public override string Category => "speed";

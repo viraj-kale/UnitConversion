@@ -1,4 +1,6 @@
-﻿public class LengthConverter : FactorUnitConverter
+﻿namespace UnitConversion.Converters;
+
+public class LengthConverter : FactorUnitConverter
 {
     public override string Category => "length";
 

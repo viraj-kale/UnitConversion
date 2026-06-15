@@ -1,3 +1,5 @@
+namespace UnitConversion.Converters;
+
 public class VolumeConverter : FactorUnitConverter
 {
     public override string Category => "volume";

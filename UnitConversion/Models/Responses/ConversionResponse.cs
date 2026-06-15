@@ -6,6 +6,12 @@
 public class ConversionResponse
 {
     /// <summary>
+    /// The conversion category used for this request.
+    /// </summary>
+    /// <example>length</example>
+    public string Category { get; set; } = string.Empty;
+
+    /// <summary>
     /// The original input value before conversion.
     /// </summary>
     /// <example>1</example>

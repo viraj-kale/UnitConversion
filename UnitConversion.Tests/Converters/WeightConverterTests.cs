@@ -1,4 +1,5 @@
-﻿using UnitConversion.Tests.Converters;
+﻿using UnitConversion.Converters;
+using UnitConversion.Exceptions;
 
 namespace UnitConversion.Tests.Converters;
 
@@ -62,9 +63,9 @@ public class WeightConverterTests
          // Arrange
          var converter = new WeightConverter();
          // Act & Assert
-         Assert.Throws<InvalidOperationException>(() =>
+         Assert.Throws<InvalidUnitException>(() =>
              converter.Convert(1, "invalid", "grams"));
-         Assert.Throws<InvalidOperationException>(() =>
+         Assert.Throws<InvalidUnitException>(() =>
              converter.Convert(1, "grams", "invalid"));
     }
 

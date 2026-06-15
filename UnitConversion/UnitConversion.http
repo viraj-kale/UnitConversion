@@ -1,6 +1,38 @@
 @UnitConversion_HostAddress = http://localhost:5053
 
-GET {{UnitConversion_HostAddress}}/weatherforecast/
+### List supported categories and units
+GET {{UnitConversion_HostAddress}}/api/v1/categories
 Accept: application/json
+
+###
+
+### Convert kilometers to miles
+POST {{UnitConversion_HostAddress}}/api/v1/Conversion
+Content-Type: application/json
+
+{
+  "category": "length",
+  "fromUnit": "kilometers",
+  "toUnit": "miles",
+  "value": 1
+}
+
+###
+
+### Convert Celsius to Fahrenheit
+POST {{UnitConversion_HostAddress}}/api/v1/Conversion
+Content-Type: application/json
+
+{
+  "category": "temperature",
+  "fromUnit": "celsius",
+  "toUnit": "fahrenheit",
+  "value": 100
+}
+
+###
+
+### Health check
+GET {{UnitConversion_HostAddress}}/health
 
 ###

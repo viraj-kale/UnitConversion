@@ -1,3 +1,6 @@
+using UnitConversion.Converters;
+using UnitConversion.Exceptions;
+
 namespace UnitConversion.Tests.Converters;
 
 public class TimeConverterTests
@@ -37,9 +40,9 @@ public class TimeConverterTests
     {
         var converter = new TimeConverter();
 
-        Assert.Throws<InvalidOperationException>(() =>
+        Assert.Throws<InvalidUnitException>(() =>
             converter.Convert(1, "invalid", "hours"));
-        Assert.Throws<InvalidOperationException>(() =>
+        Assert.Throws<InvalidUnitException>(() =>
             converter.Convert(1, "hours", "invalid"));
     }
 }

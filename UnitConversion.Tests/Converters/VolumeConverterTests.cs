@@ -1,3 +1,6 @@
+using UnitConversion.Converters;
+using UnitConversion.Exceptions;
+
 namespace UnitConversion.Tests.Converters;
 
 public class VolumeConverterTests
@@ -37,9 +40,9 @@ public class VolumeConverterTests
     {
         var converter = new VolumeConverter();
 
-        Assert.Throws<InvalidOperationException>(() =>
+        Assert.Throws<InvalidUnitException>(() =>
             converter.Convert(1, "invalid", "liters"));
-        Assert.Throws<InvalidOperationException>(() =>
+        Assert.Throws<InvalidUnitException>(() =>
             converter.Convert(1, "liters", "invalid"));
     }
 }

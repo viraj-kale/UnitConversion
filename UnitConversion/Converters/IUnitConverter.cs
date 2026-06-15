@@ -1,4 +1,6 @@
-﻿public interface IUnitConverter
+﻿namespace UnitConversion.Converters;
+
+public interface IUnitConverter
 {
     string Category { get; }
 

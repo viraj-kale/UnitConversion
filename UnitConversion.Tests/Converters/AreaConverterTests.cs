@@ -1,3 +1,6 @@
+using UnitConversion.Converters;
+using UnitConversion.Exceptions;
+
 namespace UnitConversion.Tests.Converters;
 
 public class AreaConverterTests
@@ -37,9 +40,9 @@ public class AreaConverterTests
     {
         var converter = new AreaConverter();
 
-        Assert.Throws<InvalidOperationException>(() =>
+        Assert.Throws<InvalidUnitException>(() =>
             converter.Convert(1, "invalid", "acres"));
-        Assert.Throws<InvalidOperationException>(() =>
+        Assert.Throws<InvalidUnitException>(() =>
             converter.Convert(1, "acres", "invalid"));
     }
 }

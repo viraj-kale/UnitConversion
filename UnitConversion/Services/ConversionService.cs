@@ -1,6 +1,11 @@
-﻿using UnitConversion.Models.Requests;
+﻿using UnitConversion.Converters;
+using UnitConversion.Exceptions;
+using UnitConversion.Models.Requests;
 using UnitConversion.Models.Responses;
+using UnitConversion.Services.Interfaces;
 using UnitConversion.Validators;
+
+namespace UnitConversion.Services;
 
 public class ConversionService : IConversionService
 {
@@ -19,10 +24,13 @@ public class ConversionService : IConversionService
     {
         _validator.Validate(request);
 
-        var converter = _converters.First(
+        var converter = _converters.FirstOrDefault(
             candidate => candidate.Category.Equals(
                 request.Category,
                 StringComparison.OrdinalIgnoreCase));
+
+        if (converter is null)
+            throw new UnsupportedCategoryException(request.Category);
 
         double result = converter.Convert(
             request.Value!.Value,
@@ -31,6 +39,7 @@ public class ConversionService : IConversionService
 
         return new ConversionResponse
         {
+            Category = request.Category,
             OriginalValue = request.Value.Value,
             FromUnit = request.FromUnit,
             ToUnit = request.ToUnit,

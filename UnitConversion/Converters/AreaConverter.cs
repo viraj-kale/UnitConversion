@@ -1,3 +1,5 @@
+namespace UnitConversion.Converters;
+
 public class AreaConverter : FactorUnitConverter
 {
     public override string Category => "area";

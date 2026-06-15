@@ -1,3 +1,8 @@
+using UnitConversion.Constants;
+using UnitConversion.Exceptions;
+
+namespace UnitConversion.Converters;
+
 public abstract class FactorUnitConverter : IUnitConverter
 {
     public abstract string Category { get; }
@@ -13,10 +18,22 @@ public abstract class FactorUnitConverter : IUnitConverter
     public double Convert(double value, string fromUnit, string toUnit)
     {
         if (!TryGetFactor(fromUnit, out var fromFactor))
-            throw new InvalidOperationException($"Invalid source unit '{fromUnit}'.");
+        {
+            throw new InvalidUnitException(
+                fromUnit,
+                Category,
+                GetDocumentedUnits(),
+                "fromUnit");
+        }
 
         if (!TryGetFactor(toUnit, out var toFactor))
-            throw new InvalidOperationException($"Invalid target unit '{toUnit}'.");
+        {
+            throw new InvalidUnitException(
+                toUnit,
+                Category,
+                GetDocumentedUnits(),
+                "toUnit");
+        }
 
         return value * fromFactor / toFactor;
     }
@@ -25,5 +42,12 @@ public abstract class FactorUnitConverter : IUnitConverter
     {
         var normalized = unit.Trim().ToLowerInvariant();
         return ConversionFactors.TryGetValue(normalized, out factor);
+    }
+
+    private IEnumerable<string> GetDocumentedUnits()
+    {
+        return UnitConversion.Constants.SupportedUnits.Categories.TryGetValue(Category, out var units)
+            ? units
+            : [];
     }
 }

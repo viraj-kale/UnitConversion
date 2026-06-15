@@ -8,6 +8,8 @@ namespace UnitConversion.Tests.Api;
 
 public class ConversionApiErrorTests : IClassFixture<WebApplicationFactory<Program>>
 {
+    private const string ConversionEndpoint = "/api/v1/Conversion";
+
     private readonly HttpClient _client;
 
     public ConversionApiErrorTests(WebApplicationFactory<Program> factory)
@@ -18,7 +20,7 @@ public class ConversionApiErrorTests : IClassFixture<WebApplicationFactory<Progr
     [Fact]
     public async Task Convert_MissingFields_ReturnsValidationProblemDetails()
     {
-        var response = await _client.PostAsJsonAsync("/api/Conversion", new { });
+        var response = await _client.PostAsJsonAsync(ConversionEndpoint, new { });
 
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
 
@@ -34,7 +36,7 @@ public class ConversionApiErrorTests : IClassFixture<WebApplicationFactory<Progr
     public async Task Convert_UnsupportedCategory_ReturnsProblemDetails()
     {
         var response = await _client.PostAsJsonAsync(
-            "/api/Conversion",
+            ConversionEndpoint,
             new ConversionRequest
             {
                 Category = "distance",
@@ -59,7 +61,7 @@ public class ConversionApiErrorTests : IClassFixture<WebApplicationFactory<Progr
     public async Task Convert_InvalidUnit_ReturnsProblemDetails()
     {
         var response = await _client.PostAsJsonAsync(
-            "/api/Conversion",
+            ConversionEndpoint,
             new ConversionRequest
             {
                 Category = "length",
@@ -81,7 +83,7 @@ public class ConversionApiErrorTests : IClassFixture<WebApplicationFactory<Progr
     public async Task Convert_ValidRequest_ReturnsOk()
     {
         var response = await _client.PostAsJsonAsync(
-            "/api/Conversion",
+            ConversionEndpoint,
             new ConversionRequest
             {
                 Category = "length",
@@ -97,7 +99,7 @@ public class ConversionApiErrorTests : IClassFixture<WebApplicationFactory<Progr
     public async Task Convert_InvalidJson_ReturnsBadRequest()
     {
         var content = new StringContent("{ invalid json", System.Text.Encoding.UTF8, "application/json");
-        var response = await _client.PostAsync("/api/Conversion", content);
+        var response = await _client.PostAsync(ConversionEndpoint, content);
 
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
     }

@@ -1,4 +1,5 @@
-﻿using UnitConversion.Tests.Converters;
+﻿using UnitConversion.Converters;
+using UnitConversion.Exceptions;
 
 namespace UnitConversion.Tests.Converters;
 
@@ -62,7 +63,7 @@ public class TemperatureConverterTests
         // Arrange
         var converter = new TemperatureConverter();
         // Act & Assert
-        Assert.Throws<InvalidOperationException>(() =>
+        Assert.Throws<InvalidUnitException>(() =>
             converter.Convert(0, "invalid", "celsius"));
     }
 }

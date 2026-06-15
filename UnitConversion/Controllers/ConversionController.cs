@@ -1,6 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Asp.Versioning;
+using Microsoft.AspNetCore.Mvc;
 using UnitConversion.Models.Requests;
 using UnitConversion.Models.Responses;
+using UnitConversion.Services.Interfaces;
 
 namespace UnitConversion.Controllers;
 
@@ -8,7 +10,8 @@ namespace UnitConversion.Controllers;
 /// Converts values between units for length, weight, temperature, volume, area, speed, and time.
 /// </summary>
 [ApiController]
-[Route("api/[controller]")]
+[ApiVersion("1.0")]
+[Route("api/v{version:apiVersion}/[controller]")]
 [Produces("application/json")]
 public class ConversionController : ControllerBase
 {

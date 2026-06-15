@@ -1,4 +1,6 @@
-﻿public class WeightConverter : FactorUnitConverter
+﻿namespace UnitConversion.Converters;
+
+public class WeightConverter : FactorUnitConverter
 {
     public override string Category => "weight";
 
