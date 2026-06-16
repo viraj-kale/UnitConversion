@@ -4,7 +4,10 @@ ASP.NET Core Web API for converting numeric values between units of measurement 
 
 ## Live API
 
-**Base URL:** [https://unitconversion.onrender.com](https://unitconversion.onrender.com)
+**Base URL:** [https://unitconversion.onrender.com](https://unitconversion.onrender.com)  
+**Swagger UI:** [https://unitconversion.onrender.com/swagger](https://unitconversion.onrender.com/swagger)
+
+> The root URL (`/`) has no API content by itself. Use `/swagger` for the interactive docs or the endpoints below.
 
 | Endpoint | URL |
 |----------|-----|

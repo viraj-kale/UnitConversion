@@ -45,7 +45,29 @@ public static class WebApplicationExtensions
 
         app.MapPrometheusScrapingEndpoint().DisableRateLimiting();
 
+        MapRootEndpoint(app);
+
         return app;
+    }
+
+    private static void MapRootEndpoint(WebApplication app)
+    {
+        if (IsSwaggerEnabled(app))
+        {
+            app.MapGet("/", () => Results.Redirect("/swagger"))
+                .ExcludeFromDescription()
+                .DisableRateLimiting();
+            return;
+        }
+
+        app.MapGet("/", () => Results.Ok(new
+        {
+            name = SwaggerDescriptions.ApiTitle,
+            health = "/health",
+            categories = "/api/v1/categories"
+        }))
+        .ExcludeFromDescription()
+        .DisableRateLimiting();
     }
 
     private static bool IsSwaggerEnabled(WebApplication app) =>
