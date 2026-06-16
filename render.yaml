@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: unitconversion-api
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    plan: free
+    healthCheckPath: /health
+    envVars:
+      - key: ASPNETCORE_ENVIRONMENT
+        value: Production
+      - key: ASPNETCORE_URLS
+        value: http://+:8080
+      - key: Swagger__Enabled
+        value: "true"

@@ -2,6 +2,72 @@
 
 ASP.NET Core Web API for converting numeric values between units of measurement across length, weight, temperature, volume, area, speed, and time.
 
+## Live API
+
+**Base URL:** [https://unitconversion.onrender.com](https://unitconversion.onrender.com)
+
+| Endpoint | URL |
+|----------|-----|
+| Swagger UI | [https://unitconversion.onrender.com/swagger](https://unitconversion.onrender.com/swagger) |
+| List categories | `GET https://unitconversion.onrender.com/api/v1/categories` |
+| Convert value | `POST https://unitconversion.onrender.com/api/v1/Conversion` |
+| Health check | `GET https://unitconversion.onrender.com/health` |
+
+**Example (PowerShell):**
+
+```powershell
+Invoke-RestMethod -Uri "https://unitconversion.onrender.com/api/v1/categories"
+
+$body = @{
+  category = "length"
+  fromUnit = "kilometers"
+  toUnit   = "miles"
+  value    = 1
+} | ConvertTo-Json
+
+Invoke-RestMethod -Uri "https://unitconversion.onrender.com/api/v1/Conversion" `
+  -Method Post -Body $body -ContentType "application/json"
+```
+
+> **Note:** The free Render plan spins down after inactivity. The first request after idle may take 30–60 seconds while the service wakes up.
+
+## Deploy to Render
+
+This repo includes a [Render Blueprint](https://render.com/docs/blueprint-spec) (`render.yaml`) and a production-ready `Dockerfile`.
+
+### One-time setup
+
+1. Push this repository to GitHub ([viraj-kale/UnitConversion](https://github.com/viraj-kale/UnitConversion)).
+2. Sign in to the [Render Dashboard](https://dashboard.render.com/).
+3. Click **New** → **Blueprint**.
+4. Connect your GitHub account and select the **UnitConversion** repository.
+5. Render detects `render.yaml` and proposes a **Web Service** named `unitconversion-api`.
+6. Click **Apply** and wait for the Docker build and deploy to finish.
+
+Your live URL will be:
+
+```text
+https://unitconversion.onrender.com
+```
+
+If you choose a different service name in Render, update the **Live API** links in this README to match (`https://<your-service-name>.onrender.com`).
+
+### Manual deploy (without Blueprint)
+
+1. **New** → **Web Service** → connect the GitHub repo.
+2. Set **Language** to **Docker**.
+3. **Dockerfile path:** `./Dockerfile`
+4. **Health check path:** `/health`
+5. Add environment variable: `ASPNETCORE_ENVIRONMENT` = `Production`
+6. Create the service.
+
+### Verify deployment
+
+```bash
+curl https://unitconversion.onrender.com/health
+curl https://unitconversion.onrender.com/api/v1/categories
+```
+
 ## Prerequisites
 
 - [.NET 9 SDK](https://dotnet.microsoft.com/download)
@@ -56,13 +122,25 @@ Running `Program.cs` or `bin/Debug/net9.0/UnitConversion.exe` directly skips lau
 
 ## Swagger (interactive API documentation)
 
-Swagger UI is available in the **Development** environment only. It is powered by [Swashbuckle](https://github.com/domaindrivendev/Swashbuckle.AspNetCore) and documents API version **v1**.
+Swagger UI is available in **Development** and on the **live Render deployment**. It is powered by [Swashbuckle](https://github.com/domaindrivendev/Swashbuckle.AspNetCore) and documents API version **v1**.
 
-### Open Swagger UI
+### Open Swagger UI locally
 
 1. Start the API with `dotnet run --project UnitConversion`.
 2. Confirm the console shows `Hosting environment: Development`.
 3. Open **http://localhost:5053/swagger** in a browser.
+
+### Open Swagger UI on Render
+
+**https://unitconversion.onrender.com/swagger**
+
+After pushing Swagger changes, wait for Render to redeploy. If Swagger still returns 404, add this environment variable in the Render dashboard (**Environment** tab):
+
+| Key | Value |
+|-----|-------|
+| `Swagger__Enabled` | `true` |
+
+Then trigger a **Manual Deploy**.
 
 ### Try the API from Swagger
 
@@ -174,9 +252,9 @@ Versioning is included in the URL for clarity, cacheability, and straightforward
 
 Units and factors are hardcoded in converter classes for the current scope. The `IUnitConverter` strategy pattern and dependency injection make it straightforward to add categories or load definitions from a database later.
 
-### Swagger only in Development
+### Swagger only in Development (by default)
 
-Interactive API docs are disabled outside Development. Clients should use `GET /api/v1/categories` at runtime to discover supported units.
+Interactive API docs are enabled automatically in **Development**. On Render (Production), Swagger is enabled via `Swagger:Enabled` in `appsettings.Production.json`. Set `Swagger__Enabled=false` in environment variables to disable it on a live deployment.
 
 ### Observability
 

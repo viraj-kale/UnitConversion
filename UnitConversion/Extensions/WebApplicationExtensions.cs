@@ -1,4 +1,5 @@
 using Serilog;
+using UnitConversion.Configuration;
 using UnitConversion.Swagger;
 
 namespace UnitConversion.Extensions;
@@ -28,17 +29,8 @@ public static class WebApplicationExtensions
         app.UseCors("Default");
         app.UseRateLimiter();
 
-        if (app.Environment.IsDevelopment())
-        {
-            app.UseSwagger();
-            app.UseSwaggerUI(options =>
-            {
-                options.SwaggerEndpoint(
-                    $"/swagger/{SwaggerDescriptions.ApiVersion}/swagger.json",
-                    SwaggerDescriptions.ApiTitle);
-                options.DocumentTitle = SwaggerDescriptions.ApiTitle;
-            });
-        }
+        if (IsSwaggerEnabled(app))
+            EnableSwaggerUi(app);
 
         app.UseAuthorization();
 
@@ -54,6 +46,22 @@ public static class WebApplicationExtensions
         app.MapPrometheusScrapingEndpoint().DisableRateLimiting();
 
         return app;
+    }
+
+    private static bool IsSwaggerEnabled(WebApplication app) =>
+        app.Environment.IsDevelopment() ||
+        app.Configuration.GetValue<bool>($"{SwaggerOptions.SectionName}:Enabled");
+
+    private static void EnableSwaggerUi(WebApplication app)
+    {
+        app.UseSwagger();
+        app.UseSwaggerUI(options =>
+        {
+            options.SwaggerEndpoint(
+                $"/swagger/{SwaggerDescriptions.ApiVersion}/swagger.json",
+                SwaggerDescriptions.ApiTitle);
+            options.DocumentTitle = SwaggerDescriptions.ApiTitle;
+        });
     }
 
     private static bool IsHttpsRedirectionEnabled(WebApplication app)

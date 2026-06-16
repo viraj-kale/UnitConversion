@@ -18,14 +18,16 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/* \
     && adduser --disabled-password --gecos "" appuser \
     && chown -R appuser /app
-USER appuser
 
 ENV ASPNETCORE_URLS=http://+:8080
 EXPOSE 8080
 
 COPY --from=build /app/publish .
+COPY docker-entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh && chown appuser:appuser /entrypoint.sh
+USER appuser
 
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
   CMD curl -f http://localhost:8080/health || exit 1
 
-ENTRYPOINT ["dotnet", "UnitConversion.dll"]
+ENTRYPOINT ["/entrypoint.sh"]
