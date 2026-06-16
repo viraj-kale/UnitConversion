@@ -9,6 +9,8 @@ ASP.NET Core Web API for converting numeric values between units of measurement 
 
 ## Run locally
 
+From the repository root:
+
 ```bash
 dotnet restore
 dotnet build
@@ -16,12 +18,86 @@ dotnet test
 dotnet run --project UnitConversion
 ```
 
-The API listens on `http://localhost:5053` by default.
+When started with `dotnet run`, the app loads `UnitConversion/Properties/launchSettings.json` and uses the default **`http`** launch profile:
 
-- Swagger UI (Development only): `http://localhost:5053/swagger`
+| Setting | Value |
+|---------|-------|
+| URL | `http://localhost:5053` |
+| Environment | `Development` |
+| Swagger UI | `http://localhost:5053/swagger` |
+
+Leave the terminal open while testing. Press **Ctrl+C** to stop the server.
+
+### Visual Studio
+
+1. Set **UnitConversion** as the startup project.
+2. Select the **`http`** or **`https`** launch profile in the toolbar (not **Run Program.cs**).
+3. Press **F5**. Swagger opens automatically when using a profile with `launchUrl: swagger`.
+
+The **`https`** profile listens on `https://localhost:7113` and `http://localhost:5053`.
+
+### Do not run `Program.cs` or the `.exe` directly
+
+Running `Program.cs` or `bin/Debug/net9.0/UnitConversion.exe` directly skips launch settings. That starts the app in **Production** on **port 5000**, disables Swagger, and is not the intended local workflow.
+
+### Troubleshooting
+
+| Symptom | Cause | Fix |
+|---------|-------|-----|
+| `address already in use` on port 5053 | Another instance is still running | Stop it with **Ctrl+C** in the original terminal, or run `Get-Process UnitConversion \| Stop-Process -Force` in PowerShell |
+| `ERR_CONNECTION_REFUSED` in the browser | The API is not running | Start it with `dotnet run --project UnitConversion` and wait for `Now listening on: http://localhost:5053` |
+| Swagger returns 404 | App is running in Production (port 5000) | Restart with `dotnet run --project UnitConversion` |
+
+### Other endpoints
+
 - Health check: `GET /health`
 - Readiness check: `GET /health/ready`
 - Prometheus metrics: `GET /metrics`
+
+## Swagger (interactive API documentation)
+
+Swagger UI is available in the **Development** environment only. It is powered by [Swashbuckle](https://github.com/domaindrivendev/Swashbuckle.AspNetCore) and documents API version **v1**.
+
+### Open Swagger UI
+
+1. Start the API with `dotnet run --project UnitConversion`.
+2. Confirm the console shows `Hosting environment: Development`.
+3. Open **http://localhost:5053/swagger** in a browser.
+
+### Try the API from Swagger
+
+1. Expand **GET /api/v1/Categories** → **Try it out** → **Execute** to list supported categories and units.
+2. Expand **POST /api/v1/Conversion** → **Try it out**.
+3. Edit the request body, for example:
+
+   ```json
+   {
+     "category": "length",
+     "fromUnit": "kilometers",
+     "toUnit": "miles",
+     "value": 1
+   }
+   ```
+
+4. Click **Execute** and inspect the response body and status code.
+
+### Swagger implementation
+
+| Component | Location | Purpose |
+|-----------|----------|---------|
+| Pipeline registration | `Extensions/WebApplicationExtensions.cs` | Enables Swagger UI only when `IsDevelopment()` |
+| Service registration | `Extensions/ServiceCollectionExtensions.cs` | Configures `AddSwaggerGen` with API versioning |
+| Versioned OpenAPI docs | `Extensions/ConfigureSwaggerOptions.cs` | Generates a document per API version |
+| Schema and examples | `Swagger/ConversionSchemaFilter.cs`, `Swagger/ConversionExamplesOperationFilter.cs` | Enriches request schemas and sample payloads |
+| Descriptions | `Swagger/SwaggerDescriptions.cs` | API title, supported units, and usage notes |
+
+XML comments on controllers and models are included in the generated OpenAPI document (`GenerateDocumentationFile` is enabled in the project file).
+
+### Alternative ways to call the API
+
+- **HTTP file:** `UnitConversion/UnitConversion.http` — use the **Send Request** link in Visual Studio or Cursor.
+- **curl / PowerShell / fetch:** see [API overview](#api-overview) below.
+- **Runtime discovery:** `GET /api/v1/categories` works in all environments (including Production and Docker).
 
 ## Run with Docker
 
@@ -77,6 +153,8 @@ UnitConversion/
   Validators/      Request validation
   Middleware/      Global exception handling
   Constants/       Supported categories and units
+  Swagger/         OpenAPI schema filters and API descriptions
+  Properties/      Launch profiles (`launchSettings.json`)
 UnitConversion.Tests/
   Api/             Integration tests
   Converters/      Unit tests for conversion logic

@@ -22,7 +22,9 @@ public static class WebApplicationExtensions
             };
         });
 
-        app.UseHttpsRedirection();
+        if (IsHttpsRedirectionEnabled(app))
+            app.UseHttpsRedirection();
+
         app.UseCors("Default");
         app.UseRateLimiter();
 
@@ -52,6 +54,21 @@ public static class WebApplicationExtensions
         app.MapPrometheusScrapingEndpoint().DisableRateLimiting();
 
         return app;
+    }
+
+    private static bool IsHttpsRedirectionEnabled(WebApplication app)
+    {
+        var configuredUrls = app.Configuration["urls"]
+            ?? Environment.GetEnvironmentVariable("ASPNETCORE_URLS")
+            ?? string.Empty;
+
+        if (configuredUrls.Contains("https://", StringComparison.OrdinalIgnoreCase))
+            return true;
+
+        if (!string.IsNullOrEmpty(Environment.GetEnvironmentVariable("ASPNETCORE_HTTPS_PORT")))
+            return true;
+
+        return app.Configuration.GetValue<int?>("HttpsRedirection:HttpsPort") is > 0;
     }
 
     private static void UseSecurityHeaders(this WebApplication app)
